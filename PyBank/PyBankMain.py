@@ -24,8 +24,30 @@ with open(csvpath) as csvfile:
     row_count = sum(1 for row in csvreader)
     print(f"Number of Months: {row_count}")
 
-     #Average of the changes in profit losses
-    average = int(ProfitLoss/row_count)
-    print(f"Average Change ${average}")
+    csvfile.seek(0)
+    changeList = []
+    previousrow = 0
+    next(csvreader)
+    for row in csvreader:
+        if (int(row[1]) > previousrow):
+            #print(f"add {previousrow}")
+            changeList.append(int(row[1]) - previousrow)
+        if (int(row[1]) < previousrow):
+            #print(f"subtract {previousrow}")
+            changeList.append(int(row[1]) - previousrow)
+        previousrow = int(row[1])
+
+    changeTotal = 0
+    for change in changeList:
+        changeTotal = changeTotal + change
+
+    averageChange = changeTotal / row_count
+    print(f"Average Change: ${averageChange}")
+
+    greatestIncrease = max(changeList)
+    greatestDecrease = min(changeList)
+
+    print(f"Greatest Increase: ${greatestIncrease}")
+    print(f"Greatest Decrease: ${greatestDecrease}")
 
 csvfile.close()
