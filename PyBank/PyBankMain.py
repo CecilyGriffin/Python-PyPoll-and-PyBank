@@ -19,7 +19,10 @@ with open(csvpath) as csvfile:
     #Return to Second row in .csv
     csvfile.seek(1)
 
+    #
+
     #Start loop to get row count for number of months
     row_count = sum(1 for row in csvreader)
     print(f"Number of Months: {row_count}")
+
 csvfile.close()
