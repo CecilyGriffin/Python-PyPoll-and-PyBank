@@ -4,8 +4,6 @@ import csv
 
 # Set path for file
 csvpath = os.path.join(".", "PyBankResources", "budget_data.csv")
-print("Financial Analysis")
-print("~~~~~~~~~~~~~~~~~~")
 # Read using CSV module
 with open(csvpath) as csvfile:
     csvreader = csv.reader(csvfile, delimiter=',')
@@ -29,7 +27,6 @@ with open(csvpath) as csvfile:
         if(len(row) < 1): #csv file had blank rows after every record
             continue
         row_count = row_count + 1
-    print(f"Number of Months: {row_count}")
 
     csvfile.seek(0)
     next(csvreader)
@@ -51,16 +48,16 @@ with open(csvpath) as csvfile:
             difference = "-" + str(difference)
             difference = int(difference)
             negativeChangeList.append(difference)
-            if (difference == max(negativeChangeList)):
+            if (difference == min(negativeChangeList)):
                 greatestDecreaseMonth = row[0]
-                greatestDecreaseAmount = row[1]
+                greatestDecreaseAmount = difference
         if (previousrow < int(row[1])):
             difference = abs(previousrow - int(row[1]))
             difference = int(difference)
             positiveChangeList.append(difference)
             if(difference == max(positiveChangeList)):
                 greatestIncreaseMonth = row[0]
-                greatestIncreaseAmount = row[1]
+                greatestIncreaseAmount = difference
         previousrow = int(row[1])
 
     changeTotal = int(0)
@@ -71,9 +68,27 @@ with open(csvpath) as csvfile:
         changeTotal = changeTotal + int(change)
 
     averageChange = changeTotal / (row_count - 1) #Subtracted first row from months count as there wasn't a change in the first month
+    
+    #Print to terminal
+    print("Financial Analysis")
+    print("~~~~~~~~~~~~~~~~~~")
+    print(f"Number of Months: {row_count}")
+    print(f"Total: ${ProfitLoss}")
     print(f"Average Change: ${round(averageChange,2)}")
+    print(f"Greatest Increase in Profits Month : {greatestIncreaseMonth} - (${greatestIncreaseAmount})")
+    print(f"Greatest Decrease in Losses Month : {greatestDecreaseMonth} - (${greatestDecreaseAmount})")
 
-    print(f"Greatest Increase in Profits Month : {greatestIncreaseMonth}")
-    print(f"Greatest Increase in Profits Amount : ${greatestIncreaseAmount}")
-    print(f"Greatest Decrease in Losses Month : {greatestDecreaseMonth}")
-    print(f"Greatest Decrease in Losses Amount : ${greatestDecreaseAmount}")
+    #Export to txt file
+    resultspath = os.path.join(".", "PyBankAnalysis.txt")
+    if os.path.exists(resultspath):
+        os.remove(resultspath)
+    f = open(resultspath, "a")
+    f.write("Financial Analysis\n")
+    f.write("~~~~~~~~~~~~~~~~~~\n")
+    f.write(f"Number of Months: {row_count}\n")
+    f.write(f"Total: ${ProfitLoss}\n")
+    f.write(f"Average Change: ${round(averageChange,2)}\n")
+    f.write(f"Greatest Increase in Profits Month and Amount: {greatestIncreaseMonth}  (${greatestIncreaseAmount})\n")
+    f.write(f"Greatest Decrease in Losses Month and Amount: {greatestDecreaseMonth}  (${greatestDecreaseAmount})\n")
+    f.close()
+csvfile.close()
